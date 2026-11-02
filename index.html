@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>恐怖无限流｜测一测你是什么副本角色</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+        body {
+            background: #0c0c10;
+            color: #c8c8d0;
+            min-height: 100vh;
+            background-image: radial-gradient(circle at 20% 30%, #1a1422 0%, transparent 45%), radial-gradient(circle at 80% 70%, #17121d 0%, transparent 40%);
+        }
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 24px 16px;
+        }
+        /* 首页 */
+        .start-page {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 90vh;
+            text-align: center;
+            gap: 24px;
+        }
+        .start-page h1 {
+            font-size: 32px;
+            color: #e2e2e8;
+            letter-spacing: 4px;
+            text-shadow: 0 0 12px #543b7077;
+        }
+        .start-page p {
+            color: #9494a0;
+            line-height: 1.7;
+            max-width: 540px;
+        }
+        .start-btn {
+            margin-top:16px;
+            padding:14px 40px;
+            background: linear-gradient(135deg,#2c203b,#191424);
+            border: 1px solid #443258;
+            color:#ddd;
+            font-size:17px;
+            border-radius:10px;
+            cursor:pointer;
+            transition: all 0.3s ease;
+        }
+        .start-btn:hover {
+            border-color:#745499;
+            box-shadow: 0 0 16px #4b336660;
+        }
+
+        /* 答题页 */
+        .quiz-page {
+            display:none;
+        }
+        .progress-wrap {
+            width:100%;
+            height:6px;
+            background:#1b1822;
+            border-radius:99px;
+            overflow:hidden;
+            margin-bottom:32px;
+        }
+        .progress-bar {
+            height:100%;
+            background: linear-gradient(90deg,#6b4992,#413057);
+            transition: width 0.4s ease;
+        }
+        .q-index {
+            color:#777;
+            font-size:14px;
+            margin-bottom:8px;
+        }
+        .question {
+            font-size:22px;
+            color:#e6e6ee;
+            margin-bottom:28px;
+            line-height:1.6;
+        }
+        .option-list {
+            display:flex;
+            flex-direction:column;
+            gap:14px;
+            margin-bottom:24px;
+        }
+        .option-item {
+            padding:16px 20px;
+            background: rgba(24,20,33,0.65);
+            backdrop-filter: blur(8px);
+            border:1px solid #2f273f;
+            border-radius:10px;
+            cursor:pointer;
+            transition: all 0.3s ease;
+            color:#b8b8c4;
+            font-size:15px;
+        }
+        .option-item:hover {
+            background:rgba(44,34,60,0.72);
+            border-color:#574075;
+            transform: translateY(-2px);
+        }
+        .bottom-ctrl{
+            display:flex;
+            justify-content:flex-start;
+        }
+        .prev-btn{
+            padding:10px 22px;
+            background: rgba(22,18,30,0.7);
+            backdrop-filter: blur(8px);
+            border:1px solid #382c4b;
+            color:#aaa;
+            border-radius:8px;
+            cursor:pointer;
+        }
+        .prev-btn:disabled{
+            opacity:0.35;
+            cursor:not-allowed;
+        }
+
+        /* 结果页 */
+        .result-page {
+            display:none;
+            min-height:90vh;
+            padding-top:40px;
+        }
+        .result-card {
+            background: rgba(22,18,30,0.7);
+            backdrop-filter: blur(12px);
+            border:1px solid #382c4b;
+            border-radius:16px;
+            padding:32px 28px;
+            text-align:center;
+            box-shadow: 0 0 30px #2b1f3b44;
+        }
+        .result-title {
+            font-size:28px;
+            color:#e9e9f2;
+            margin-bottom:14px;
+            letter-spacing:2px;
+        }
+        .result-desc {
+            color:#b0b0bc;
+            line-height:1.8;
+            text-align:left;
+            margin:20px 0;
+        }
+        .result-reason {
+            margin-top:20px;
+            padding-top:20px;
+            border-top:1px solid #2e253d;
+            text-align:left;
+            color:#9999a8;
+            line-height:1.7;
+        }
+        .restart-btn {
+            margin-top:30px;
+            padding:12px 32px;
+            background: linear-gradient(135deg,#2c203b,#191424);
+            border: 1px solid #443258;
+            color:#ddd;
+            border-radius:10px;
+            cursor:pointer;
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+        @keyframes fadeIn {
+            from {opacity:0; filter: blur(4px);}
+            to {opacity:1; filter: blur(0px);}
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- 首页 -->
+    <div class="start-page" id="startPage">
+        <h1>恐怖无限流 · 角色测试</h1>
+        <p>当系统广播响起，副本大门缓缓开启。<br>你被拉入陌生的诡异空间，你会成为这里的哪一类人？<br>共24题，答案没有直白的好坏，遵从第一直觉选择。</p>
+        <button class="start-btn" onclick="startQuiz()">踏入副本</button>
+    </div>
+
+    <!-- 答题页 -->
+    <div class="quiz-page" id="quizPage">
+        <div class="progress-wrap">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <div class="q-index" id="qIndex"></div>
+        <div class="question" id="questionText"></div>
+        <div class="option-list" id="optionBox"></div>
+        <div class="bottom-ctrl">
+            <button class="prev-btn" id="prevBtn" onclick="goPrev()">上一题</button>
+        </div>
+    </div>
+
+    <!-- 结果页 -->
+    <div class="result-page" id="resultPage">
+        <div class="result-card fade-in">
+            <h2 class="result-title" id="resName"></h2>
+            <div class="result-desc" id="resIntro"></div>
+            <div class="result-reason" id="resAnalyse"></div>
+            <button class="restart-btn" onclick="restartTest()">重新进入副本</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// 24道题目，每题固定4选项
+const questionList = [
+    {
+        q:"黑暗里传来细碎声响，声源方向不明，你第一反应？",
+        opt:["停住动作，屏住呼吸分辨方位","悄悄挪到遮挡物后方藏好","主动朝声音的方向缓慢靠近","保持原地不动，等待对方先暴露"]
+    },
+    {
+        q:"拿到一条信息，它有明显矛盾点，你会？",
+        opt:["先标记疑点，暂时不采信","默认它藏着陷阱，直接弃用","尝试拼凑剩下线索，验证真伪","相信其中一部分可用内容"]
+    },
+    {
+        q:"同行人提出一个冒险方案，收益很高但风险未知，你？",
+        opt:["要求对方拿出支撑方案的依据","不表态，跟随大多数人的选择","愿意配合，一起尝试","委婉拒绝，坚持稳妥路线"]
+    },
+    {
+        q:"你发现一处看起来很安全的房间，房门虚掩，你？",
+        opt:["先远距离观察片刻再靠近","直接推门快速扫视一圈","先寻找别的通路，避开这里","找其他人结伴一起进去"]
+    },
+    {
+        q:"规则纸条写了一条模糊禁令，没有写违反后果，你？",
+        opt:["尽量规避，不去触碰这条线","觉得它大概率是干扰项","小范围试探，看会不会触发危险","仔细联想其他规则，推导含义"]
+    },
+    {
+        q:"队伍里有人情绪崩溃，开始扰乱计划，你倾向？",
+        opt:["想办法安抚稳住对方","拉开距离，防止拖累自己","提醒他冷静，不听就放弃他","默默观察，看他会引来什么"]
+    },
+    {
+        q:"眼前出现两样东西，一样能自保，一样能解锁线索，只能拿一个？",
+        opt:["优先选择自保道具","优先选择线索物品","犹豫，尝试寻找两全办法","看当下局势临时判断"]
+    },
+    {
+        q:"你需要和未知存在短暂交易，对方给出的条件很古怪，你？",
+        opt:["抠字眼，寻找契约漏洞","拒绝交易，不信任对方","讨价还价修改条件","谨慎答应，留后手防备"]
+    },
+    {
+        q:"逃跑路上，岔路两条，一条干净安静，一条有微弱人声，选？",
+        opt:["安静无人的那条","有人声的那条","原地停留，再听一会","返回刚刚的位置重新思考"]
+    },
+    {
+        q:"你察觉到队友在隐瞒一部分信息，你会？",
+        opt:["旁敲侧击慢慢试探","直接开口质问对方","不再信任他，保留防备","无所谓，你也不会全盘交底"]
+    },
+    {
+        q:"副本给了你一个可以牺牲别人换取自身安全的机会，你？",
+        opt:["绝对不会接受这个机会","不到绝境绝不考虑","会权衡代价再决定","抓住机会保全自己"]
+    },
+    {
+        q:"等待危险降临的空档，你更愿意？",
+        opt:["复盘所有线索梳理逻辑","闭目休息保存体力","检查手边所有可用物品","留意周围一切微小异动"]
+    },
+    {
+        q:"一个看似无害的NPC主动向你示好，赠送物品，你？",
+        opt:["礼貌收下，但严加提防","婉言谢绝，不建立联系","收下，尝试和NPC建立联系","转手把东西交给队友"]
+    },
+    {
+        q:"计划被突发意外打乱，一切脱离预判，你？",
+        opt:["迅速重建简易方案","陷入短暂慌乱再调整","依靠本能随机应变","把决策权交给更冷静的人"]
+    },
+    {
+        q:"你有机会牺牲一件重要道具，拯救陌生人，你？",
+        opt:["愿意出手救人","要看陌生人值不值得救","优先保留道具自保","直接放弃救人"]
+    },
+    {
+        q:"你发现一条捷径，但它不属于规则允许的路线，你？",
+        opt:["评估风险后决定走不走","坚决不走违规路线","尝试走，赌不会出事","告诉队友，投票决定"]
+    },
+    {
+        q:"有个队友能力很强，但行事自私，你会？",
+        opt:["保持合作，同时防备他","主动靠近绑定他，借他保命","不和他深度打交道","想办法制衡约束他"]
+    },
+    {
+        q:"你看见了幻觉，分不清是精神污染还是副本提示，你？",
+        opt:["记录幻象内容交叉验证","认定是污染，强行忽略它","跟着幻象指引行动","询问其他人是否看见同样画面"]
+    },
+    {
+        q:"通关倒计时越来越近，线索还差关键一环，你？",
+        opt:["加快节奏，主动冒险找线索","守住安全区，等线索上门","重新回看旧信息挖遗漏","逼迫队友分头寻找"]
+    },
+    {
+        q:"如果必须承担副本里的某个诅咒标记，你希望它？",
+        opt:["只针对自己，不牵连别人","可以转移给其他目标","代价缓慢显现，不是立刻爆发","标记本身附带特殊能力"]
+    },
+    {
+        q:"你偶然窥见副本的底层真相，真相十分残酷，你？",
+        opt:["藏好秘密，利用这个信息","尽量忘掉，避免被它盯上","把真相分享给信任的同伴","打算拿真相和系统博弈"]
+    },
+    {
+        q:"队伍抵达出口，但出口一次只能通过一部分人，你？",
+        opt:["谦让，让更需要的人先走","争取自己拿到离开名额","约定顺序，公平分配机会","破坏规则，抢夺通道"]
+    },
+    {
+        q:"离开副本之后，你会怎么看待这段经历？",
+        opt:["它是枷锁，只想彻底摆脱","它是试炼，让你不断变强","它是游戏，你慢慢享受博弈","它是牢笼，你想要掌控它"]
+    },
+    {
+        q:"假如以后必须重返这个副本，你的想法？",
+        opt:["提前做好万全准备再来","尽量避免，能不回就不回","带着更强的伙伴一起回来","独自回来，向副本复仇"]
+    }
+];
+
+// 10种结果
+const resultList = [
+    {
+        name:"【副本幕后执棋者】",
+        intro:"你是藏在规则缝隙里的副本意志、幕后BOSS。你不参与玩家逃生，你制定规则、布置幻象、安排杀机。所有人的挣扎逃亡，都只是你棋盘上的消遣。你极少亲自出手，擅长利用人性制造灾难，玩家很难察觉你的存在。对你而言，不存在通关，副本就是你的领地。",
+        analyse:"你的选择习惯俯瞰全局、权衡所有人得失，擅长布局博弈，不执着于单纯逃生，乐于旁观他人抉择。比起闯关者，你天生适合制定这场死亡游戏。"
+    },
+    {
+        name:"【开局即陨的路人NPC】",
+        intro:"你是烘托恐怖氛围、送出第一条线索的短命NPC。台词寥寥，戏份稀薄，往往副本开场不久就触发死亡flag，用来警示玩家危险。你没有长线剧本，很难撑到副本中期，是标准的工具人炮灰。",
+        analyse:"你的选择偏向被动，容易被环境和他人带动，警惕性不足，缺少主动谋划风险的意识。危机四伏的副本里，你总是最先撞上死亡剧情的那一类。"
+    },
+    {
+        name:"【浑水摸鱼的独狼玩家】",
+        intro:"你是游离在所有队伍之外的独行玩家，不信任队友，拒绝深度绑定任何人。你不想要掌控副本，也不想早早退场，唯一目标就是活下去通关。你会捡拾别人遗留线索，避开正面冲突，可以短暂合作，但永远留好跑路后路。",
+        analyse:"你的选择优先保全自身，习惯低调潜伏、规避冲突，不爱掺和纷争。不追求掌控一切，也不会轻易沦为牺牲品，是无限流经典苟流选手。"
+    },
+    {
+        name:"【蛊惑人心的伪善NPC】",
+        intro:"你是副本里欺骗性最强的NPC，外表温和无害，主动指路、赠送道具博取信任。所有善意全都是陷阱，你享受看着信任你的人一步步踏入死路。你拥有自我意识，温柔外壳之下藏着精心布置的毁灭圈套。",
+        analyse:"你擅长观察人心，懂得释放善意换取信任，精于权衡伪装。你不会直白展露恶意，擅长拿捏人性里的侥幸与心软。"
+    },
+    {
+        name:"【规则的殉道者】",
+        intro:"你是死死恪守副本规则的人。敬畏每一条文字，绝不越线半分，坚信遵守规则就是唯一生路。但副本规则本身就是圈套，你越是老实听话，越容易落入文字埋下的陷阱。你无意害人，却会因为死守教条走向毁灭。",
+        analyse:"你的选择极度守序、抗拒冒险，排斥违规捷径，优先相信既定信息。很难跳出框架思考，最容易被副本的文字牢笼困住。"
+    },
+    {
+        name:"【游离于系统之外的变数｜BUG玩家】",
+        intro:"你是副本诞生的意外漏洞。看不懂常规规则，不按照预设剧本行动，你的思路永远不在系统预判范围内。副本杀机、NPC引诱、既定剧情，常常对你失效。你说不清自己为什么能活，单纯不在剧本之中。",
+        analyse:"你的选择跳出常规安全逻辑，接纳怪诞，不执着得失，不跟随大众思路。你不想做BOSS，也不愿按剧本赴死，你本身就是副本无法预判的变数。"
+    },
+    {
+        name:"【疯批猎杀者】",
+        intro:"你是主动狩猎玩家的存在。你不在乎通关，也不是系统指派NPC，追逐、对峙、撕碎人心对你来说是乐趣。危险不是威胁，是狂欢。你主动打破平静挑起冲突，是所有玩家避之不及的噩梦。",
+        analyse:"你不惧风险，愿意主动靠近未知、拥抱冲突，不喜欢安稳苟活，不受自保底线束缚，比起躲藏，你更愿意主动制造危机。"
+    },
+    {
+        name:"【情报贩子NPC】",
+        intro:"中立派NPC，不杀人、也不救人。手中握着副本关键线索，但一切信息明码标价。你不会刻意撒谎，但情报绝不免费送出。谁拿出筹码就卖给谁；谁威胁你，你就悄悄把对方信息卖给杀机。副本结局与你无关，你只做等价交易。",
+        analyse:"你擅长权衡利弊、预留后手，很少被感情绑架，习惯把一切换算成筹码，不站队、不共情，依靠信息差游走在生死缝隙。"
+    },
+    {
+        name:"【被篡改记忆的失忆玩家】",
+        intro:"你曾经很强，闯过无数副本，记忆却被副本抹除。偶尔闪过熟悉的碎片预感，直觉常常救你一命，但你不知道自己是谁、过往经历了什么。一边艰难逃生，一边下意识追寻遗失的真相。",
+        analyse:"你的选择充满矛盾，时而谨慎保守，时而跟随直觉做出反常举动，容易被细碎线索吸引，不会全盘相信眼前所见。"
+    },
+    {
+        name:"【善良献祭型工具人】",
+        intro:"你是剧本里写好的献祭位。本性心软，愿意信任同伴、愿意牺牲自己换取别人活下去。副本精准捕捉到你的特质，不断设置剧情诱导你交出自己。你未必看不出危险，但依旧很难狠心抽身，是催泪剧本里注定的牺牲者。",
+        analyse:"你的选择优先顾及他人，守住内心善意，拒绝主动加害别人。哪怕察觉风险，同伴求助时，依旧很难做到冷漠抽身。"
+    }
+];
+const dimensionNames = [
+    "幕后执棋",
+    "炮灰NPC",
+    "独狼求生",
+    "伪善蛊惑",
+    "守序殉道",
+    "BUG变数",
+    "疯批狩猎",
+    "情报交易",
+    "失忆探求",
+    "献祭善意"
+];
+
+// 计分映射：24题，每题4选项，10维度分数
+const scoreMap = [
+    [[4,1,3,2,1,0,2,3,1,2],[1,4,2,3,2,1,0,1,2,3],[2,0,1,2,1,4,3,1,2,1],[3,2,4,1,3,1,1,2,0,1]],
+    [[4,1,2,3,2,1,1,3,0,2],[0,3,1,4,2,2,3,1,1,1],[3,2,1,2,1,3,2,4,1,0],[2,2,3,1,4,1,0,2,1,3]],
+    [[4,0,2,3,1,2,3,2,1,1],[2,3,4,1,2,0,1,1,2,2],[1,1,2,2,0,4,3,3,1,0],[3,2,1,0,4,1,1,2,2,3]],
+    [[4,1,3,2,1,0,2,3,1,2],[1,0,2,4,1,3,3,2,1,1],[2,3,0,1,4,2,1,1,2,1],[3,2,4,1,2,1,0,2,1,3]],
+    [[4,1,2,2,3,0,1,3,1,2],[1,3,1,2,2,4,0,1,2,1],[2,1,0,1,2,3,4,2,1,1],[3,2,1,4,2,1,1,2,0,3]],
+    [[3,4,1,2,2,0,1,1,1,3],[2,1,4,0,1,2,3,3,1,1],[2,0,1,3,4,1,2,2,1,1],[1,2,1,2,1,4,1,1,3,2]],
+    [[2,3,4,1,2,0,1,2,1,3],[3,1,2,4,1,1,2,2,0,2],[2,2,1,2,1,3,3,1,2,1],[4,1,2,2,3,1,1,2,1,0]],
+    [[4,0,2,3,1,2,2,3,1,1],[1,3,1,2,2,4,1,1,2,1],[2,1,2,4,1,1,3,2,0,2],[3,2,1,3,2,1,1,4,1,1]],
+    [[3,4,2,1,2,0,1,2,1,2],[1,1,2,0,1,4,3,3,1,0],[4,1,3,2,1,1,2,2,0,2],[2,2,0,3,4,1,1,1,2,2]],
+    [[4,1,2,3,1,0,2,3,1,2],[2,0,1,4,1,3,3,2,1,1],[1,2,0,2,4,1,1,3,2,1],[2,3,4,1,2,1,0,2,1,1]],
+    [[1,4,2,0,3,1,2,1,1,3],[3,2,1,3,2,1,1,2,1,2],[3,1,2,4,1,1,2,2,0,1],[0,1,3,2,1,4,3,1,2,1]],
+    [[4,1,2,2,3,0,1,3,1,2],[2,3,0,1,2,1,1,1,2,4],[3,1,3,1,1,2,2,2,1,1],[3,2,1,0,4,1,1,2,2,1]],
+    [[4,1,2,3,1,0,1,3,1,2],[3,4,0,1,2,1,1,2,1,1],[1,1,2,4,1,2,3,2,0,1],[2,2,1,2,3,1,1,4,1,0]],
+    [[4,1,3,1,2,2,3,0,1,1],[2,3,0,1,4,1,1,1,2,2],[1,1,4,2,1,3,2,2,0,1],[3,4,0,2,1,1,1,2,1,1]],
+    [[1,4,2,0,3,1,2,1,1,3],[3,2,2,2,1,1,1,3,1,1],[3,1,3,4,1,0,1,2,0,2],[0,1,4,2,1,3,3,1,2,1]],
+    [[4,1,3,2,1,0,2,3,1,1],[3,4,0,1,2,1,1,2,1,1],[1,1,4,2,1,3,3,0,1,1],[2,2,1,2,3,1,1,4,0,1]],
+    [[3,1,2,4,1,0,2,2,1,2],[1,2,4,3,0,1,3,1,1,1],[2,4,0,1,3,1,1,2,2,1],[3,1,2,4,1,0,2,2,1,2]],
+    [[4,1,2,2,3,0,1,3,1,1],[3,2,0,1,4,1,1,1,2,2],[1,1,4,2,0,3,3,1,2,1],[4,2,1,2,1,1,1,3,0,2]],
+    [[4,1,3,1,2,0,2,3,1,1],[2,3,0,1,4,1,1,1,2,2],[4,1,2,3,1,0,1,3,1,2],[1,2,4,2,1,3,3,0,1,1]],
+    [[3,4,1,2,2,0,1,1,1,2],[1,1,2,4,2,3,2,1,1,0],[2,1,3,2,4,0,1,2,1,1],[2,1,2,3,1,4,1,1,0,2]],
+    [[4,1,2,3,1,0,1,3,1,2],[3,2,0,1,4,1,1,1,2,1],[2,4,1,2,1,1,1,2,0,3],[2,1,2,4,0,3,1,1,1,1]],
+    [[2,4,1,0,3,1,2,1,1,2],[1,1,4,3,2,0,3,2,1,0],[3,2,2,2,1,1,1,3,1,1],[0,1,3,4,0,2,2,1,2,1]],
+    [[4,1,2,3,1,0,1,3,1,1],[2,1,4,3,0,1,3,1,1,1],[2,1,2,4,0,3,1,1,1,1],[1,2,0,2,3,2,1,1,4,1]],
+    [[4,1,2,3,1,0,1,3,1,1],[2,4,0,1,3,1,1,2,1,1],[1,1,4,2,0,3,3,1,1,1],[1,1,3,4,0,2,2,1,1,1]]
+];
+
+let currentQ = 0;
+let score = [0,0,0,0,0,0,0,0,0,0];
+let answerRecord = [];
+const totalQ = questionList.length;
+
+function startQuiz(){
+    document.getElementById("startPage").style.display="none";
+    document.getElementById("quizPage").style.display="block";
+    renderQuestion();
+}
+
+function renderQuestion(){
+    const q = questionList[currentQ];
+    document.getElementById("qIndex").innerText = `题目 ${currentQ+1}/${totalQ}`;
+    document.getElementById("questionText").innerText = q.q;
+    document.getElementById("optionBox").innerHTML = "";
+    document.getElementById("progressBar").style.width = ((currentQ)/totalQ*100)+"%";
+    const prevBtn = document.getElementById("prevBtn");
+    prevBtn.disabled = currentQ === 0;
+
+    q.opt.forEach((optStr,idx)=>{
+        const div = document.createElement("div");
+        div.className="option-item fade-in";
+        div.innerText = optStr;
+        div.onclick = ()=>selectOption(idx);
+        document.getElementById("optionBox").appendChild(div);
+    })
+}
+
+function selectOption(optIdx){
+    answerRecord[currentQ] = optIdx;
+    const add = scoreMap[currentQ][optIdx];
+    for(let i=0;i<10;i++) score[i] += add[i];
+
+    currentQ++;
+    if(currentQ >= totalQ){
+        showResult();
+    }else{
+        renderQuestion();
+    }
+}
+
+function goPrev(){
+    if(currentQ <= 0) return;
+    currentQ--;
+    const lastOpt = answerRecord[currentQ];
+    const sub = scoreMap[currentQ][lastOpt];
+    for(let i=0;i<10;i++) score[i] -= sub[i];
+    renderQuestion();
+}
+
+function showResult(){
+    document.getElementById("quizPage").style.display="none";
+    document.getElementById("resultPage").style.display="block";
+    let maxScore = Math.max(...score);
+    let candidates = [];
+    for(let i=0;i<10;i++){
+        if(score[i] === maxScore) candidates.push(i);
+    }
+    const resIdx = candidates[Math.floor(Math.random()*candidates.length)];
+    const res = resultList[resIdx];
+
+    document.getElementById("resName").innerText = res.name;
+    document.getElementById("resIntro").innerText = res.intro;
+    document.getElementById("resAnalyse").innerText = res.analyse;
+}
+
+function restartTest(){
+    currentQ = 0;
+    score = [0,0,0,0,0,0,0,0,0,0];
+    answerRecord = [];
+    document.getElementById("resultPage").style.display="none";
+    document.getElementById("startPage").style.display="flex";
+}
+</script>
+</body>
+</html>
